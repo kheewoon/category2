@@ -166,7 +166,7 @@ public class CategoryService {
 
 
         //삭제된 Category 조회후 존재하지 않으면 삭제 성공
-        if(categoryQueryRepository.findCategoryOne(findCategoryDto.getId()).isEmpty()){
+        if(categoryQueryRepository.findCategoryOne(id).isEmpty()){
             //orderNo 재정렬 함수 호출
             reOrderNo(parentCategoryDto, nowDepth);
             return new SucessResponse(CategoryEnum.CATEGORY_DELETE_SUCESS.getCode(), CategoryEnum.CATEGORY_DELETE_SUCESS.getMessage());
