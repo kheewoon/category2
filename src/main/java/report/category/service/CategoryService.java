@@ -124,10 +124,6 @@ public class CategoryService {
         //Category 수정후 영향받은 로우 개수 리턴 = 1
         Long updateResult = categoryQueryRepository.updateCategory(id, dto);
 
-        //Category 수정후 수정된 Category 조회
-        //var updtCompCategory = categoryQueryRepository.findCategoryOne(id).orElseThrow(() -> new CategoryException(ErrorCode.CATEGORY_NOT_FOUND));
-
-
         //Category 수정이 정상이고 파라미터로 넘어온 dto에 부모객체가 존재할시
         if(updateResult > 0 && !dto.parentCategoryisEmpty()){
             //orderNo 재정렬 함수 호출
