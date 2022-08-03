@@ -1,5 +1,7 @@
 # 카테고리 API : 권희운
 
+##사용 기술 스택 : java, spring boot, jpa, QueryDsl, Embedded H2 DB
+
 ## 빌드 방법
 WORK_DIR :  category
 
