@@ -31,9 +31,14 @@ public class CategoryDto {
         return depth <= 1;
     }
 
-    /*부모 카테고리 값 체크*/
+    /*카테고리 객체 null 체크*/
+    public boolean categoryisEmpty(){
+        return this.getId() <= 0 || (null == this.categoryNm || this.categoryNm.isEmpty());
+    }
+
+    /*부모 카테고리 객체 null 체크*/
     public boolean parentCategoryisEmpty(){
-        return parentCategory == null || parentCategory.getId() <= 0;
+        return this.getParentCategory() == null || this.getParentCategory().getId() <= 0;
     }
 
     @Override

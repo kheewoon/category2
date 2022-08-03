@@ -3,13 +3,24 @@
 ## 빌드 방법
 WORK_DIR :  category
 
-jar 파일 빌드 \
-./gradlew build
+jar 파일 빌드 (테스트코드 제외) \
+./gradlew build -x test
 
 
 ## 서버 구동 방법
 빌드된 jar 파일 실행 \
 java -jar ./build/libs/category-0.0.1-SNAPSHOT.jar 
+
+
+## 단위, 통합테스트
+Controller, Service, Repository 계층별 단위테스트 \
+CategoryIntegrationTest : 통합테스트 
+
+    * 통합테스트는 테스트용 @EnableJpaAuditing configuration이 설정되어 있어 
+    * report.category.CategoryApplication.java -> @EnableJpaAuditing 주석처리후 통합테스트 실행
+
+
+    
 
 
 ## API 사용 가이드

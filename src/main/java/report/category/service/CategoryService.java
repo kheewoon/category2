@@ -118,27 +118,37 @@ public class CategoryService {
             dto.setOrderNo(categoryQueryRepository.maxOrderNo(pagrentCategoryEntity.getId(), pagrentCategoryEntity.getDepth() + 1).intValue() + 1);
         }
 
+        //updtDepthChildCategory 함수 파라미터로 넘기기 위한 dto 세팅
+        var updtCompCategory = CategoryApiDto.builder().id(id).depth(dto.getDepth()).build();
+
         //Category 수정후 영향받은 로우 개수 리턴 = 1
         Long updateResult = categoryQueryRepository.updateCategory(id, dto);
 
         //Category 수정후 수정된 Category 조회
-        var updtCompCategory = categoryQueryRepository.findCategoryOne(id).orElseThrow(() -> new CategoryException(ErrorCode.CATEGORY_NOT_FOUND));
+        //var updtCompCategory = categoryQueryRepository.findCategoryOne(id).orElseThrow(() -> new CategoryException(ErrorCode.CATEGORY_NOT_FOUND));
+
 
         //Category 수정이 정상이고 파라미터로 넘어온 dto에 부모객체가 존재할시
         if(updateResult > 0 && !dto.parentCategoryisEmpty()){
             //orderNo 재정렬 함수 호출
             reOrderNo(parentCategoryDto, findCategoryEntity.getDepth());
+            //하위 depth 자식 Category depth 변경 함수 호출
             updtDepthChildCategory(Collections.singletonList(updtCompCategory), updtCompCategory.getDepth());
         }
-        if(updateResult > 0 && 1 == dto.getDepth()){
+        if(updateResult > 0 && 1 == dto.getDepth() && dto.parentCategoryisEmpty()){
             //orderNo 재정렬 함수 호출
             reOrderNo(dto, dto.getDepth());
+            //하위 depth 자식 Category depth 변경 함수 호출
             updtDepthChildCategory(Collections.singletonList(updtCompCategory), updtCompCategory.getDepth());
-            var deleteParent = categoryRepository.findById(id).orElseThrow(() -> new CategoryException(ErrorCode.CATEGORY_NOT_FOUND));
-            deleteParent.setParent(null);
+            //부모를 삭제할 자식 카테고리 조회
+            var deleteParentEntity = categoryRepository.findById(id).orElseThrow(() -> new CategoryException(ErrorCode.CATEGORY_NOT_FOUND));
+            //부모 카테고리 연관관계 끊음
+            deleteParentEntity.setParent(null);
         }
 
-        return setChildCategory(Collections.singletonList(updtCompCategory)).stream().findFirst().orElseThrow(() -> new CategoryException(ErrorCode.CATEGORY_NOT_FOUND));
+        return setChildCategory(Collections.singletonList(
+                categoryQueryRepository.findCategoryOne(id).orElseThrow(() -> new CategoryException(ErrorCode.CATEGORY_NOT_FOUND))
+        )).stream().findFirst().orElseThrow(() -> new CategoryException(ErrorCode.CATEGORY_NOT_FOUND));
     }
 
     /**
@@ -155,7 +165,7 @@ public class CategoryService {
         int nowDepth = findCategoryDto.getDepth();
 
         //부모 객체 저장
-        var parentCategoryDto = CategoryDto.builder().id(findCategoryDto.getParentCategory().getId()).build();
+        var parentCategoryDto = CategoryDto.builder().id(findCategoryDto.getParentCategory().getId()).categoryNm(findCategoryDto.getCategoryNm()).build();
 
         //Category 삭제
         try{
@@ -249,7 +259,7 @@ public class CategoryService {
         List<CategoryApiDto> findAllCategorys = new ArrayList<>();
 
         //부모 Category가 없을시 현 depth Category 조회
-        if(parentCategoryDto.parentCategoryisEmpty()) {
+         if(null == parentCategoryDto || parentCategoryDto.categoryisEmpty()) {
             findAllCategorys = categoryRepository.findByDepthAndDeleteFlag(depth, "N").stream().map(CategoryApiDto::dtoConvert).collect(Collectors.toList());
         }
         //부모 Category id를 이용하여 자식 Category 모두 조회
