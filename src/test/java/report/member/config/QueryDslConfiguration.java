@@ -1,4 +1,4 @@
-package report.category.config;
+package report.member.config;
 
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import org.springframework.boot.test.context.TestConfiguration;
